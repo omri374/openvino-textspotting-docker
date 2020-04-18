@@ -49,5 +49,5 @@ https://download.01.org/opencv/2020/openvinotoolkit/2020.2/open_model_zoo/models
 
 Run model:
 ```
-python text_spotting_demo.py -m_m ../models/text-spotting-0002-detector.xml -m_te ../models/text-spotting-0002-recognizer-encoder.xml -m_td ../models/text-spotting-0002-recognizer-decoder.xml -i photo.png
+python text_spotting_demo.py -m_m ../models/text-spotting-0002-detector.xml -m_te ../models/text-spotting-0002-recognizer-encoder.xml -m_td ../models/text-spotting-0002-recognizer-decoder.xml -i photo.png --no_show --raw_output_message --no_track
 ```
