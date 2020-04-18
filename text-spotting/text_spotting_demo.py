@@ -289,7 +289,7 @@ def main():
         classes = outputs['classes'].astype(np.uint32)
         raw_masks = outputs['raw_masks']
         text_features = outputs['text_features']
-        print(f"{text_features: {text_features}")
+        print(f"text_features: {text_features}")
 
         # Filter out detections with low confidence.
         detections_filter = scores > args.prob_threshold
