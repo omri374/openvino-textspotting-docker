@@ -1,0 +1,15 @@
+[ INFO ] Creating Inference Engine...
+[ INFO ] Loading network files:
+	../models/text-spotting-0002-detector.xml
+	../models/text-spotting-0002-detector.bin
+[ INFO ] Loading network files:
+	../models/text-spotting-0002-recognizer-encoder.xml
+	../models/text-spotting-0002-recognizer-encoder.bin
+[ INFO ] Loading network files:
+	../models/text-spotting-0002-recognizer-decoder.xml
+	../models/text-spotting-0002-recognizer-decoder.bin
+[ INFO ] Loading IR to the plugin...
+[ INFO ] Starting inference...
+Unable to init server: Could not connect: Connection refused
+
+(Results:74821): Gtk-WARNING **: 21:13:27.928: cannot open display: 
