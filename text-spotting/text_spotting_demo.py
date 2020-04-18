@@ -380,7 +380,7 @@ def main():
             if key == esc_code:
                 break
 
-    cv2.destroyAllWindows()
+    #cv2.destroyAllWindows()
     cap.release()
     return texts
 
