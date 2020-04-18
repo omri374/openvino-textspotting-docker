@@ -252,7 +252,7 @@ def main():
     render_time = 0
 
     log.info('Starting inference...')
-    print("To close the application, press 'CTRL+C' here or switch to the output window and press ESC key")
+    #print("To close the application, press 'CTRL+C' here or switch to the output window and press ESC key")
     texts = ["EMPTY"]
     while cap.isOpened():
         ret, frame = cap.read()
@@ -289,7 +289,7 @@ def main():
         classes = outputs['classes'].astype(np.uint32)
         raw_masks = outputs['raw_masks']
         text_features = outputs['text_features']
-        print(f"text_features: {text_features}")
+        #print(f"text_features: {text_features}")
 
         # Filter out detections with low confidence.
         detections_filter = scores > args.prob_threshold
@@ -298,7 +298,7 @@ def main():
         boxes = boxes[detections_filter]
         raw_masks = raw_masks[detections_filter]
         text_features = text_features[detections_filter]
-        print(f"text_features after threshold: {text_features}")
+        #print(f"text_features after threshold: {text_features}")
 
         boxes[:, 0::2] /= scale_x
         boxes[:, 1::2] /= scale_y
