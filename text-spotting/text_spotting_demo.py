@@ -253,6 +253,7 @@ def main():
 
     log.info('Starting inference...')
     print("To close the application, press 'CTRL+C' here or switch to the output window and press ESC key")
+    texts = ["EMPTY"]
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
@@ -281,13 +282,14 @@ def main():
         # Run the net.
         inf_start = time.time()
         outputs = mask_rcnn_exec_net.infer({'im_data': input_image, 'im_info': input_image_info})
-
+        print(f"outputs: {outputs}")
         # Parse detection results of the current request
         boxes = outputs['boxes']
         scores = outputs['scores']
         classes = outputs['classes'].astype(np.uint32)
         raw_masks = outputs['raw_masks']
         text_features = outputs['text_features']
+        print(f"{text_features: {text_features}")
 
         # Filter out detections with low confidence.
         detections_filter = scores > args.prob_threshold
@@ -296,6 +298,7 @@ def main():
         boxes = boxes[detections_filter]
         raw_masks = raw_masks[detections_filter]
         text_features = text_features[detections_filter]
+        print(f"{text_features after threshold: {text_features}")
 
         boxes[:, 0::2] /= scale_x
         boxes[:, 1::2] /= scale_y
@@ -328,10 +331,11 @@ def main():
                 hidden = decoder_output[args.trd_output_cur_hidden]
 
             texts.append(text)
+            print(f"Found texts: {text}")
 
         inf_end = time.time()
         inf_time = inf_end - inf_start
-
+        
         render_start = time.time()
 
         if len(boxes) and args.raw_output_message:
@@ -346,7 +350,7 @@ def main():
             masks_tracks_ids = tracker(masks, classes)
 
         # Visualize masks.
-        frame = visualizer(frame, boxes, classes, scores, masks, texts, masks_tracks_ids)
+        #frame = visualizer(frame, boxes, classes, scores, masks, texts, masks_tracks_ids)
 
         # Draw performance stats.
         inf_time_message = 'Inference and post-processing time: {:.3f} ms'.format(inf_time * 1000)
@@ -378,6 +382,7 @@ def main():
 
     cv2.destroyAllWindows()
     cap.release()
+    return texts
 
 
 if __name__ == '__main__':
