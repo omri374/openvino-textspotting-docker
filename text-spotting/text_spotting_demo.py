@@ -298,7 +298,7 @@ def main():
         boxes = boxes[detections_filter]
         raw_masks = raw_masks[detections_filter]
         text_features = text_features[detections_filter]
-        print(f"{text_features after threshold: {text_features}")
+        print(f"text_features after threshold: {text_features}")
 
         boxes[:, 0::2] /= scale_x
         boxes[:, 1::2] /= scale_y
