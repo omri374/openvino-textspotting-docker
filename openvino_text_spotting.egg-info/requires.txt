@@ -1,5 +1,0 @@
-flask
-numpy
-opencv-python-headless==4.2.*
-pytest
-pytest-flask

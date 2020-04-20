@@ -27,8 +27,8 @@ import cv2
 import numpy as np
 from openvino.inference_engine import IENetwork, IECore
 
-from text_spotting_demo.tracker import StaticIOUTracker
-from text_spotting_demo.visualizer import Visualizer
+from text_spotting_model.tracker import StaticIOUTracker
+from text_spotting_model.visualizer import Visualizer
 
 SOS_INDEX = 0
 EOS_INDEX = 1

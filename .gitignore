@@ -1,3 +1,11 @@
+.idea/
+.ipynb_checkpoints/
+.pytest_cache/
+build/
+dist/
+.eggs/
+*.egg-info/
 models/
+data/
 gpg-openvino-key
 nohup.out
