@@ -1,14 +1,14 @@
-import os
-import logging
 import base64
 import json
-import copy
+import logging
+import os
 import random
 
-from flask import Flask, request, jsonify
-import numpy as np
 import imageio
-
+import numpy as np
+from flask import Flask, request, jsonify
+from gevent.pywsgi import WSGIServer
+from text_spotting import ResultsLogger, ModelHandler
 from .text_spotting_model import TextSpottingModel
 
 
@@ -18,6 +18,7 @@ class Server:
         self.app = Flask(__name__)
         self.app.logger.setLevel(log_level)
         self.text_spotting = TextSpottingModel()
+        self.results_logger = ResultsLogger()
         self.threshold = float(os.environ.get("OCR_THRESHOLD", "0.8"))
 
         @self.app.route('/ping/')
@@ -31,7 +32,7 @@ class Server:
 
         @self.app.route('/run_ocr', methods=["POST"])
         def run_ocr():
-            data =request.json
+            data = request.json
             image = None
             if "image" in data:
                 image_data = base64.decodebytes(data["image"].encode())
@@ -40,31 +41,53 @@ class Server:
                 return jsonify("image not found in request object")
 
             logging.debug(f'id: {data.get("monitorId")}:{data.get("imageId")}')
-            segments = copy.deepcopy(data.get("segments", []))
 
             # Call model
             try:
-                texts, boxes, scores, _ = self.text_spotting.forward(image)
-
+                texts, boxes, scores, _ = self.text_spotting.predict(image)
+                results = {'boxes': boxes.tolist(),
+                           'texts': texts,
+                           'scores': [float(s) for s in scores]}
                 # Parse output
+
                 should_log = False
                 if texts:
-                    for eb, text, score in zip(expected_boxes, texts, scores):
+                    for eb, text, score in zip(boxes, texts, scores):
                         if score > self.threshold:
-                            if segments[eb["index"]].get("value") != text:
-                                should_log = True
-                            segments[eb["index"]]["value"] = text
-                            segments[eb["index"]]["score"] = float(score)
-                            segments[eb["index"]]["source"] = "server"
+                            should_log = True
 
                 if should_log or random.randint(0, 100) == 0 or not texts:
-                    self.resultsLogger.log_ocr(image_data, data["segments"],
-                                               {'expected': expected_boxes, 'texts': texts,
-                                                'scores': [float(s) for s in scores]})
-                for s in segments:
-                    if 'value' not in s:
-                        s['value'] = None
-                logging.debug(f"Detections: {segments}")
-                return json.dumps(segments), 200, {"content-type": "application/json"}
+                    self.results_logger.log_ocr(image_data, texts, boxes, scores)
+                return json.dumps(results), 200, {"content-type": "application/json"}
             except Exception as e:
-                return jsonify(f"Error running OCR. Exception: {e}")
+                return jsonify(f"Error running OCR. Exception: {e}"), 500, {"content-type": "application/json"}
+
+
+def init_logs():
+    log_level_name = os.environ.get('CVMONITOR_LOG_LEVEL', 'DEBUG')
+    log_level = logging.DEBUG
+    if log_level_name == 'INFO':
+        log_level = logging.INFO
+    if log_level_name == 'WARNING':
+        log_level = logging.WARNING
+    if log_level_name == 'ERROR':
+        log_level = logging.ERROR
+
+    for logger in (logging.getLogger(),):
+        logger.setLevel(log_level)
+        formatter = logging.Formatter('[%(asctime)s] %(levelname)s in %(module)s: %(message)s')
+        sh = logging.StreamHandler()
+        sh.setFormatter(formatter)
+        logger.addHandler(sh)
+    return log_level
+
+
+def main():
+    log_level = init_logs()
+    server = Server(log_level)
+    host = os.environ.get('TEXT_SPOTTING_HOST', '0.0.0.0')
+    port = int(os.environ.get('TEXT_SPOTTING_PORT', '8088'))
+    logging.info('checking if model exists locally:')
+    ModelHandler.get_models()
+    logging.info(f'serving on http://{host}:{port}/')
+    WSGIServer((host, port), server.app).serve_forever()

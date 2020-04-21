@@ -16,29 +16,19 @@ EOS_INDEX = 1
 
 class TextSpottingModel:
 
-    @staticmethod
-    def get_models():
-        import yaml
-
-        models_list = yaml.safe_load(open(os.path.join(os.path.dirname(__file__), 'models.yaml'), 'r'))['files']
-        models = {}
-        for model in models_list:
-            models[model['name']] = ModelHandler.download_model(model['source'], model['name'])
-        return models
-
     def __init__(self, device='CPU', track=False, visualize=False, prob_threshold=0.3, max_seq_len=10,
                  iou_threshold=0.4, model_type='FP32', rgb2bgr=True, performance_counts=False, verbose=True):
 
         assert (model_type == 'FP32') or (model_type == 'FP16')
 
-        mask_rcnn_model_xml = self.get_models()['{}/text-spotting-0002-detector.xml'.format(model_type)]
-        mask_rcnn_model_bin = self.get_models()['{}/text-spotting-0002-detector.bin'.format(model_type)]
+        mask_rcnn_model_xml = ModelHandler.get_models()['{}/text-spotting-0002-detector.xml'.format(model_type)]
+        mask_rcnn_model_bin = ModelHandler.get_models()['{}/text-spotting-0002-detector.bin'.format(model_type)]
 
-        text_enc_model_xml = self.get_models()['{}/text-spotting-0002-recognizer-encoder.xml'.format(model_type)]
-        text_enc_model_bin = self.get_models()['{}/text-spotting-0002-recognizer-encoder.bin'.format(model_type)]
+        text_enc_model_xml = ModelHandler.get_models()['{}/text-spotting-0002-recognizer-encoder.xml'.format(model_type)]
+        text_enc_model_bin = ModelHandler.get_models()['{}/text-spotting-0002-recognizer-encoder.bin'.format(model_type)]
 
-        text_dec_model_xml = self.get_models()['{}/text-spotting-0002-recognizer-decoder.xml'.format(model_type)]
-        text_dec_model_bin = self.get_models()['{}/text-spotting-0002-recognizer-decoder.bin'.format(model_type)]
+        text_dec_model_xml = ModelHandler.get_models()['{}/text-spotting-0002-recognizer-decoder.xml'.format(model_type)]
+        text_dec_model_bin = ModelHandler.get_models()['{}/text-spotting-0002-recognizer-decoder.bin'.format(model_type)]
 
         # Plugin initialization for specified device and load extensions library if specified.
         log.info('Creating Inference Engine...')
@@ -54,7 +44,7 @@ class TextSpottingModel:
         text_dec_net = IENetwork(model=text_dec_model_xml, weights=text_dec_model_bin)
 
         supported_layers = ie.query_network(mask_rcnn_net, 'CPU')
-        not_supported_layers = [l for l in mask_rcnn_net.layers.keys() if l not in supported_layers]
+        not_supported_layers = [layer for layer in mask_rcnn_net.layers.keys() if layer not in supported_layers]
         if len(not_supported_layers) != 0:
             log.error('Following layers are not supported by the plugin for specified device {}:\n {}'.
                       format(device, ', '.join(not_supported_layers)))
@@ -91,7 +81,7 @@ class TextSpottingModel:
             self.tracker = StaticIOUTracker()
         log.info('Model ready...')
 
-    def forward(self, frame, expected_boxes=None):
+    def predict(self, frame):
         """
         returns: texts, boxes, scores, frame
         boxes are [left, top, right, bottom]
@@ -150,7 +140,7 @@ class TextSpottingModel:
             masks.append(mask)
 
         texts = []
-        alphabet = '-/.  0123456789abcdefghijklmnopqrstuvwxyz'
+        alphabet = '  0123456789abcdefghijklmnopqrstuvwxyz'
         for feature in text_features:
             feature = self.text_enc_exec_net.infer({'input': feature})['output']
             feature = np.reshape(feature, (feature.shape[0], feature.shape[1], -1))
@@ -198,8 +188,6 @@ class TextSpottingModel:
         # Draw performance stats.
         inf_time_message = 'Inference and post-processing time: {:.3f} ms'.format(inf_time * 1000)
         render_time_message = 'OpenCV rendering time: {:.3f} ms'.format(render_time * 1000)
-        cv2.putText(frame, inf_time_message, (15, 15), cv2.FONT_HERSHEY_COMPLEX, 0.5, (200, 10, 10), 1)
-        cv2.putText(frame, render_time_message, (15, 30), cv2.FONT_HERSHEY_COMPLEX, 0.5, (10, 10, 200), 1)
 
         # Print performance counters.
         if self.perf_counts:
@@ -215,7 +203,7 @@ class TextSpottingModel:
         render_time = render_end - render_start
         log.info(f"Render time = {render_time}")
 
-        return texts
+        return texts, boxes, scores, frame
 
     @staticmethod
     def segm_postprocess(box, raw_cls_mask, im_h, im_w):

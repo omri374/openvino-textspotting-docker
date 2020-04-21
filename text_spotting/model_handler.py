@@ -1,15 +1,24 @@
+import logging
 import os
 from pathlib import Path
-import logging
 
-from tqdm import tqdm
 import requests
+import yaml
+from tqdm import tqdm
 
 
 class ModelHandler:
     """
     Downloads and stores OCR models
     """
+
+    @staticmethod
+    def get_models(models_path="/text_spotting_model/models.yaml"):
+        models_list = yaml.safe_load(open(os.path.dirname(__file__) + models_path, 'r'))['files']
+        models = {}
+        for model in models_list:
+            models[model['name']] = ModelHandler.download_model(model['source'], model['name'])
+        return models
 
     @staticmethod
     def download_model(url, filename, basedir="../models"):
