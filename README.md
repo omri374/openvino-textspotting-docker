@@ -5,20 +5,64 @@ It packages all the requirements in a docker container and exposes a REST API fo
 
 ### Development
 
-#### Install locally
+### Install dependencies
+```shell script
+# Install Dependancies:
+sudo apt-get update && sudo apt-get install -yy wget libjpeg-turbo8-dev libz-dev python3-pip python3-venv git-lfs
+# Create a virtual environment if doesn't exist
+python3 -venv ~/envs/text_spotting/
+# Activate virtual environment
+source  ~/envs/text_spotting/bin/activate
+# Install in dev mode
+pip install -e .
+# Run tests
+pytest
+
+## Setting up OpenVino (intel inference engine)
+sudo scripts/install-openvino.sh
+scripts/install-openvino-python.sh
+```
+
+#### Install package locally
 ```shell script
 pip install -e .
 ```
 
+
+
 #### Download models
-````shell script
+```shell script
 text_spotting_get_models
-````
+```
 
 #### Run server
-````shell script
+```shell script
 text_spotting
-````
+```
+
+#### Test
+```shell script
+pytest
+```
+
+
+##### Request object
+/run_ocr:
+```
+{
+    "image": "base64 jpeg encoded image"
+}
+```
+
+##### Response
+```
+{
+    "texts": List[str],  # List of identified texts
+    "boxes": List[Tuple()],  # List of 8 coordinates per text
+    "score": List[float]  # Confidence values per text
+}
+```
+---
 
 References:
 
