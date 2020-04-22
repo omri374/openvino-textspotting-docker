@@ -8,6 +8,7 @@ import imageio
 import numpy as np
 from flask import Flask, request, jsonify
 from gevent.pywsgi import WSGIServer
+
 from text_spotting import ResultsLogger, ModelHandler
 from .text_spotting_model import TextSpottingModel
 
@@ -45,22 +46,40 @@ class Server:
             # Call model
             try:
                 texts, boxes, scores, _ = self.text_spotting.predict(image)
-                results = {'boxes': boxes.tolist(),
-                           'texts': texts,
-                           'scores': [float(s) for s in scores]}
-                # Parse output
 
-                should_log = False
-                if texts:
-                    for eb, text, score in zip(boxes, texts, scores):
-                        if score > self.threshold:
-                            should_log = True
+                self.log_result(boxes, image_data, scores, texts)
 
-                if should_log or random.randint(0, 100) == 0 or not texts:
-                    self.results_logger.log_ocr(image_data, texts, boxes, scores)
+                results = self.create_response(boxes, scores, texts)
                 return json.dumps(results), 200, {"content-type": "application/json"}
+
             except Exception as e:
                 return jsonify(f"Error running OCR. Exception: {e}"), 500, {"content-type": "application/json"}
+
+    def create_response(self, boxes, scores, texts):
+        results = []
+        for text, box, score in zip(texts, boxes, scores):
+            if score < self.threshold:
+                continue
+
+            coords = {
+                'left': float(box[0]),
+                'top': float(box[1]),
+                'right': float(box[2]),
+                'bottom': float(box[3])
+            }
+            results.append({'text': text,
+                            'coords': coords,
+                            'score': float(score)})
+        return results
+
+    def log_result(self, boxes, image_data, scores, texts):
+        should_log = False
+        if texts:
+            for eb, text, score in zip(boxes, texts, scores):
+                if score > self.threshold:
+                    should_log = True
+        if should_log or random.randint(0, 100) == 0 or not texts:
+            self.results_logger.log_ocr(image_data, texts, boxes, scores)
 
 
 def init_logs():

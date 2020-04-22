@@ -56,11 +56,11 @@ pytest
 
 ##### Response
 ```
-{
-    "texts": List[str],  # List of identified texts
-    "boxes": List[Tuple()],  # List of 8 coordinates per text
-    "score": List[float]  # Confidence values per text
-}
+{[
+    "text": str,  # identified text
+    "coords": {"left": float, "top": float, "right": float, "bottom": float],  # Coordinates of bounding box of text
+    "score": float  # Confidence value
+]}
 ```
 ---
 
