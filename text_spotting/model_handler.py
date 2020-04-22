@@ -15,6 +15,7 @@ class ModelHandler:
     @staticmethod
     def get_models(models_path="/text_spotting_model/models.yaml"):
         models_list = yaml.safe_load(open(os.path.dirname(__file__) + models_path, 'r'))['files']
+        print(f"Loaded model list: {models_list}")
         models = {}
         for model in models_list:
             models[model['name']] = ModelHandler.download_model(model['source'], model['name'])
@@ -32,7 +33,7 @@ class ModelHandler:
 
     @staticmethod
     def __download(url, to_path, file_name):
-        logging.info(f"Downloading model file {file_name}")
+        print(f"Downloading model file {file_name}")
         os.makedirs(os.path.dirname(to_path), exist_ok=True)
         with open(to_path, "wb") as f:
             try:
@@ -55,4 +56,4 @@ class ModelHandler:
                 t.update(len(data))
                 f.write(data)
             t.close()
-        logging.info(f"Finished downloading model file {file_name}")
+        print(f"Finished downloading model file {file_name}")
