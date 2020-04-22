@@ -11,7 +11,7 @@ setup(
         'console_scripts':
             [
                 'text_spotting=text_spotting.server:main',
-                'text_spotting_get_models=text_spotting:ModelHandler.get_models'
+                'text_spotting_get_models=text_spotting.model_handler:download_models'
             ],
     },
 )

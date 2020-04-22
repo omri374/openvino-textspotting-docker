@@ -57,3 +57,8 @@ class ModelHandler:
                 f.write(data)
             t.close()
         print(f"Finished downloading model file {file_name}")
+
+
+def download_models():
+    ModelHandler.get_models()
+    return 0
