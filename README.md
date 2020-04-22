@@ -74,10 +74,3 @@ Run the original OpenVino demo:
 ```
 python text_spotting/text_spotting_demo.py -m_m models/FP32/text-spotting-0002-detector.xml -m_te models/FP32/text-spotting-0002-recognizer-encoder.xml -m_td models/FP32/text-spotting-0002-recognizer-decoder.xml -i data/photo.jpg --no_show --raw_output_message --no_track
 ```
-
-Still missing:
-
-1. Dockerize everything
-1. Define agreed API
-   1. Change image read to input
-   1. Define output structure
