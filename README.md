@@ -64,6 +64,17 @@ pytest
 ```
 ---
 
+### Build Docker
+
+```sh
+sudo docker build -t temp/text_spotting_ocr .
+```
+
+### Run Docker
+
+```
+sudo docker run temp/text_spotting_ocr
+```
 References:
 
 1. Full dockerfile in rafael's repo: https://github.com/giladfr-rnd/monitors-cv/blob/master/full.Dockerfile
