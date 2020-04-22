@@ -66,7 +66,7 @@ pytest
 
 References:
 
-1. Full dockerfile in rafael's repo: https://github.com/giladfr-rnd/monitors-cv/blob/master/full.Dockerfile
+1. Many parts in this repo are based on: https://github.com/giladfr-rnd/monitors-cv/
 1. OpenVino model server in Docker: https://github.com/IntelAI/OpenVINO-model-server/blob/master/docs/docker_container.mdThis contains code for deployment an OpenVino model to K8S (for example) using grpc
 1. How to install OpenVino on Docker: https://docs.openvinotoolkit.org/latest/_docs_install_guides_installing_openvino_docker_linux.html
 
