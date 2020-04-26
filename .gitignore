@@ -11,4 +11,4 @@ __pycache__/*.*
 */__pycache__/
 gpg-openvino-key
 nohup.out
-.pyc
+*.pyc

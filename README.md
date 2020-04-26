@@ -31,19 +31,28 @@ pip install -e .
 
 
 #### Download models
-```shell script
+```
 text_spotting_get_models
 ```
 
 #### Run server
-```shell script
+```
 text_spotting
 ```
 
+
+#### Call service
+
+```
+get_ocr --file_path data/out1.png --service_url http://128.0.0.1:8081/run_ocr
+```
+
+
 #### Test
-```shell script
+```
 pytest
 ```
+
 
 
 ##### Request object
@@ -75,7 +84,9 @@ sudo docker build -t temp/text_spotting_ocr .
 ```
 sudo docker run temp/text_spotting_ocr
 ```
-References:
+
+
+### References:
 
 1. Many parts in this repo are based on: https://github.com/giladfr-rnd/monitors-cv/
 1. OpenVino model server in Docker: https://github.com/IntelAI/OpenVINO-model-server/blob/master/docs/docker_container.mdThis contains code for deployment an OpenVino model to K8S (for example) using grpc

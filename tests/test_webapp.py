@@ -1,6 +1,7 @@
 import base64
 import json
 import os
+import time
 from pathlib import Path
 
 from flask import url_for
@@ -26,9 +27,10 @@ def test_response_struct_ok(client):
     src_image = open(Path(os.path.dirname(__file__), "../data/out1.png").resolve(), "rb").read()
     image_buffer = base64.encodebytes(src_image).decode()
     data = {"image": image_buffer}
-
+    start_time = time.time()
     response = client.post(url_for("run_ocr"), json=data)
-
+    duration = time.time() - start_time
+    print(f"Request duration: {duration}")
     for finding in json.loads(response.data):
         assert 'text' in finding
         assert 'coords' in finding
