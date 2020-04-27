@@ -74,13 +74,13 @@ pytest
 ### Build Docker
 
 ```sh
-sudo docker build -t temp/text_spotting_ocr .
+sudo docker build -t omri374/text_spotting_ocr .
 ```
 
 ### Run Docker (interactively)
 
 ```
-sudo docker run -it -p 8080:8088 omri374/text_spotting
+sudo docker run -it -p 8080:8088 omri374/text_spotting_ocr
 ```
 
 #### Test docker by calling the web service
