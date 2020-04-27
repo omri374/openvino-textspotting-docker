@@ -42,3 +42,11 @@ def test_response_struct_ok(client):
 
         assert finding['coords']['left'] < finding['coords']['right']
         assert finding['coords']['top'] < finding['coords']['bottom']
+
+
+def test_wrong_image_type_exception(client):
+    src_image = open(Path(os.path.dirname(__file__), "../data/test.png").resolve(), "rb").read()
+    image_buffer = base64.encodebytes(src_image).decode()
+    data = {"image": image_buffer}
+    response = client.post(url_for("run_ocr"), json=data)
+    assert response.status_code == 500

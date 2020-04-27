@@ -16,7 +16,7 @@ EOS_INDEX = 1
 
 class TextSpottingModel:
 
-    def __init__(self, device='CPU', track=False, visualize=False, prob_threshold=0.3, max_seq_len=10,
+    def __init__(self, device='CPU', prob_threshold=0.3, max_seq_len=10,
                  iou_threshold=0.4, model_type='FP32', rgb2bgr=True, performance_counts=False, verbose=True):
 
         assert (model_type == 'FP32') or (model_type == 'FP16')
@@ -75,10 +75,7 @@ class TextSpottingModel:
         self.max_seq_len = max_seq_len
         self.rgb2bgr = rgb2bgr
         self.perf_counts = performance_counts
-        # self.device_names = get_fields_info()  # Change if we want to explicit set device parameters (respirator, ivac, monitor)
         self.device_names = None
-        if track:
-            self.tracker = StaticIOUTracker()
         log.info('Model ready...')
 
     def predict(self, frame):
@@ -163,7 +160,7 @@ class TextSpottingModel:
                 hidden = decoder_output['hidden']
 
             texts.append(text)
-            print(f"Found texts: {text}")
+            #print(f"Found texts: {text}")
 
         inf_end = time.time()
         inf_time = inf_end - inf_start
@@ -172,14 +169,9 @@ class TextSpottingModel:
 
         if len(boxes) and self.verbose:
             log.info('Detected boxes:')
-            log.info('  Class ID | Confidence |     XMIN |     YMIN |     XMAX |     YMAX ')
-            for box, cls, score, mask in zip(boxes, classes, scores, masks):
-                log.info('{:>10} | {:>10f} | {:>8.2f} | {:>8.2f} | {:>8.2f} | {:>8.2f} '.format(cls, score, *box))
-
-        # Get instance track IDs.
-        masks_tracks_ids = None
-        if self.tracker is not None:
-            masks_tracks_ids = self.tracker(masks, classes)
+            log.info('  Text | Confidence |     Left |     Top |     Right |     Bottom ')
+            for box, text, score, mask in zip(boxes, texts, scores, masks):
+                log.info('{} | {:>10f} | {:>8.2f} | {:>8.2f} | {:>8.2f} | {:>8.2f} '.format(text, score, *box))
 
         render_time = 0
         # Visualize masks.
