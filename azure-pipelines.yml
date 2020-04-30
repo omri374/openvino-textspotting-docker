@@ -38,3 +38,7 @@ steps:
     pip install pytest pytest-azurepipelines
     pytest
   displayName: 'pytest'
+
+- script: |
+    sudo docker build -t omri374/text_spotting_ocr .
+  displayName: 'Build Docker'
