@@ -1,3 +1,5 @@
+[![Build Status](https://tfsprodweu3.visualstudio.com/Ac38be8bc-3e13-4419-bad2-46535e77c903/Rafael/_apis/build/status/Continuous%20Integration?branchName=master)](https://tfsprodweu3.visualstudio.com/Ac38be8bc-3e13-4419-bad2-46535e77c903/Rafael/_build/latest?definitionId=183&branchName=master)
+
 ## text-spotting-docker: Docker installation of OpenVino's text-spotting model
 
 This repo contains a wrapper around the OpenVino text spotting model. 
