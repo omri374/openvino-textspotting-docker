@@ -16,7 +16,7 @@ EOS_INDEX = 1
 
 class TextSpottingModel:
 
-    def __init__(self, device='CPU', prob_threshold=0.3, max_seq_len=10,
+    def __init__(self, device='CPU', prob_threshold=0.3, max_seq_len=7,
                  iou_threshold=0.4, model_type='FP32', rgb2bgr=True, performance_counts=False, verbose=True):
 
         assert (model_type == 'FP32') or (model_type == 'FP16')
@@ -160,7 +160,6 @@ class TextSpottingModel:
                 hidden = decoder_output['hidden']
 
             texts.append(text)
-            #print(f"Found texts: {text}")
 
         inf_end = time.time()
         inf_time = inf_end - inf_start
@@ -185,7 +184,7 @@ class TextSpottingModel:
         if self.perf_counts:
             perf_counts = self.mask_rcnn_exec_net.requests[0].get_perf_counts()
             log.info('Performance counters:')
-            print('{:<70} {:<15} {:<15} {:<15} {:<10}'.format('name', 'layer_type', 'exet_type', 'status',
+            log.info('{:<70} {:<15} {:<15} {:<15} {:<10}'.format('name', 'layer_type', 'exet_type', 'status',
                                                               'real_time, us'))
             for layer, stats in perf_counts.items():
                 log.debug('{:<70} {:<15} {:<15} {:<15} {:<10}'.format(layer, stats['layer_type'], stats['exec_type'],
