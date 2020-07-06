@@ -1,3 +1,5 @@
+[![Build Status](https://tfsprodweu3.visualstudio.com/Ac38be8bc-3e13-4419-bad2-46535e77c903/Rafael/_apis/build/status/Continuous%20Integration?branchName=master)](https://tfsprodweu3.visualstudio.com/Ac38be8bc-3e13-4419-bad2-46535e77c903/Rafael/_build/latest?definitionId=183&branchName=master)
+
 ## text-spotting-docker: Docker installation of OpenVino's text-spotting model
 
 This repo contains a wrapper around the OpenVino text spotting model. 
@@ -102,6 +104,5 @@ python text_spotting/text_spotting_demo.py -m_m models/FP32/text-spotting-0002-d
 
 ### References:
 
-1. Many parts in this repo are based on [this repo](https://github.com/giladfr-rnd/monitors-cv/)
 1. [OpenVino model server in Docker](https://github.com/IntelAI/OpenVINO-model-server/blob/master/docs/docker_container.md). This contains code for deployment an OpenVino model to K8S (for example) using grpc
 1. [How to install OpenVino on Docker](https://docs.openvinotoolkit.org/latest/_docs_install_guides_installing_openvino_docker_linux.html)
